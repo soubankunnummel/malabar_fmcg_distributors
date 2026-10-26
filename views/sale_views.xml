@@ -1,3 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO Phase 5: wholesale sale views -->
-<odoo></odoo>
+<odoo>
+
+      <!-- Add credit info fields to the SO form (Other Info tab) -->
+    <record id="view_order_form_credit_info" model="ir.ui.view">
+        <field name="name">sale.order.form.malabar.credit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='other_information']/group" position="inside">
+                <group string="Credit Limit" name="malabar_credit">
+                    <field name="outstanding_credit"/>
+                    <field name="credit_status"
+                             decoration-danger="credit_status == 'over'"
+                             decoration-success="credit_status == 'ok'"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Returns smart button next to the Delivery button -->
+    <record id="view_order_form_returns_button" model="ir.ui.view">
+        <field name="name">sale.order.form.malabar.returns</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_returns" type="object"
+                        class="oe_stat_button" icon="fa-undo"
+                        groups="stock.group_stock_user"
+                        invisible="return_count == 0">
+                    <field name="return_count" widget="statinfo" string="Returns"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
