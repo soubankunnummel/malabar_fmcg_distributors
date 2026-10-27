@@ -6,8 +6,10 @@
 # TODO Phase 7: account.move inherit (reporting helpers)
 from . import product_inherit
 from . import purchase_inherit
+from . import purchase_order_line_inherit
 from . import stock_inherit
 from . import sale_inherit
 from . import pos_inherit
 from . import account_inherit
 from . import res_partner_inherit
+

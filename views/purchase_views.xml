@@ -1,3 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO Phase 3: purchase views -->
-<odoo></odoo>
+<odoo>
+    <record id="view_purchase_order_form_manager_approval"
+            model="ir.ui.view">
+        <field name="name">purchase.order.form.manager.approval</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_approve_purchase"
+                        type="object"
+                        string="Approve Purchase"
+                        class="btn-primary"
+                        groups="malabar_fmcg_distributors.group_purchase_manager_approval"
+                        invisible="not approval_required or approval_status == 'approved' or state not in ['draft', 'sent']"/>
+
+                <button name="action_reject_purchase"
+                        type="object"
+                        string="Reject Purchase"
+                        class="btn-secondary"
+                        groups="malabar_fmcg_distributors.group_purchase_manager_approval"
+                        invisible="not approval_required or approval_status == 'rejected' or state not in ['draft', 'sent']"/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <group string="Purchase Approval">
+                    <field name="approval_required" readonly="1"/>
+                    <field name="approval_status" readonly="1"/>
+                    <field name="manager_approved" readonly="1"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="domain">[('supplier_approval_status', '=', 'approved')]</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

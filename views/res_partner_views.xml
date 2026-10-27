@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO Phase 2/5: supplier/customer views (res.partner) -->
-<odoo></odoo>
+<odoo>
+    <record id="view_partner_form_supplier_approval" model="ir.ui.view">
+        <field name="name">res.partner.form.supplier.approval</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="supplier_approval_status"/>
+                <field name="supplier_lead_time"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

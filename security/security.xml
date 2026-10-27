@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO Phase 1/7: groups - purchase manager, warehouse staff, salesperson, cashier, accountant -->
-<odoo></odoo>
+<odoo>
+    <!-- Managers authorized to approve high-value purchase orders -->
+    <record id="group_purchase_manager_approval" model="res.groups">
+        <field name="name">Purchase Approval Manager</field>
+        <field name="implied_ids"
+               eval="[(4, ref('purchase.group_purchase_manager'))]"/>
+    </record>
+</odoo>
