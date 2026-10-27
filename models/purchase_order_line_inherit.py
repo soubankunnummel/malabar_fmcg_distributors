@@ -17,9 +17,7 @@ class PurchaseOrderLine(models.Model):
                 else 'not_required'
             )
 
-            order.with_context(
-                purchase_approval_action='reset'
-            ).write({
+            order.sudo().write({
                 'manager_approved': False,
                 'approval_status': status,
             })
@@ -74,9 +72,7 @@ class PurchaseOrderLine(models.Model):
                 else 'not_required'
             )
 
-            order.with_context(
-                purchase_approval_action='reset'
-            ).write({
+            order.sudo().write({
                 'manager_approved': False,
                 'approval_status': status,
             })

@@ -85,17 +85,16 @@ class PurchaseOrder(models.Model):
             'manager_approved',
         }
 
-        if protected_fields.intersection(vals):
-            if self.env.context.get('purchase_approval_action') == 'manager':
-                self._check_purchase_approval_manager()
-            elif (
-                self.env.context.get('purchase_approval_action')
-                != 'reset'
-            ):
-                raise UserError(
-                    "Approval fields can only be changed through "
-                    "the purchase approval workflow."
-                )
+        # Prevent ordinary writes from changing approval fields.
+        # Only trusted server-side code using sudo() can do so.
+        if (
+            protected_fields.intersection(vals)
+            and not self.env.su
+        ):
+            raise UserError(
+                "Approval fields can only be changed through "
+                "authorized purchase approval operations."
+            )
 
         approval_affecting_fields = {
             'partner_id',
@@ -111,6 +110,8 @@ class PurchaseOrder(models.Model):
 
         result = super().write(vals)
 
+        # Changes to important purchase details invalidate
+        # previous approval for draft RFQs.
         if reset_approval:
             for order in self:
                 if order.state not in ('draft', 'sent'):
@@ -122,15 +123,13 @@ class PurchaseOrder(models.Model):
                     else 'not_required'
                 )
 
-                order.with_context(
-                    purchase_approval_action='reset'
-                ).write({
+                order.sudo().write({
                     'manager_approved': False,
                     'approval_status': new_status,
                 })
 
         return result
-
+    
     def action_approve_purchase(self):
         self._check_purchase_approval_manager()
 
@@ -150,9 +149,7 @@ class PurchaseOrder(models.Model):
                     "Approve the supplier before approving this order."
                 )
 
-            order.with_context(
-                purchase_approval_action='manager'
-            ).write({
+            order.sudo().write({
                 'approval_status': 'approved',
                 'manager_approved': True,
             })
@@ -173,13 +170,10 @@ class PurchaseOrder(models.Model):
                     "Manager approval is not required for this order."
                 )
 
-            order.with_context(
-                purchase_approval_action='manager'
-            ).write({
+            order.sudo().write({
                 'approval_status': 'rejected',
                 'manager_approved': False,
             })
-
         return True
 
     def button_confirm(self):
